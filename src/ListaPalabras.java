@@ -37,7 +37,5 @@ public class ListaPalabras implements Utilizable{
     @Override
     public void pideYAnyade() {
         lista.add(JOptionPane.showInputDialog(null,"¿Palabra a añadir?"));
-
-
     }
 }
