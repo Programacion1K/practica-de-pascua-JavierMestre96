@@ -15,6 +15,6 @@ public class Herramienta {
     }
 
     public String toString(){
-        return this.nombre+':'+this.precio;
+        return this.nombre+';'+this.precio;
     }
 }

@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ListaHerramienta implements Utilizable{
-    public static final char DELIMITADOR = ':';
+    public static final char DELIMITADOR = ';';
     List<Herramienta> lista = new ArrayList<>();
     @Override
     public String muestraTodos() {
@@ -23,25 +23,32 @@ public class ListaHerramienta implements Utilizable{
     @Override
     public void leeDeFichero(File fichero) {
         String nombreHerramienta;
-        double precioHerramienta;
+        int precioHerramienta;
         int posicionDelimitador;
-        try{
+        try {
             List<String> lineasFichero = Files.readAllLines(fichero.toPath());
-            for (int i = 0; i<lineasFichero.size();i++){
+            for (int i = 0; i < lineasFichero.size(); i++) {
                 posicionDelimitador = lineasFichero.get(i).indexOf(DELIMITADOR);
-                nombreHerramienta = lineasFichero.get(i).substring(0,posicionDelimitador);
-                precioHerramienta = Double.parseDouble(lineasFichero.get(i).substring(posicionDelimitador));
-                lista.add(new Herramienta(nombreHerramienta,precioHerramienta));
+                nombreHerramienta = lineasFichero.get(i).substring(0, posicionDelimitador);
+                precioHerramienta = Integer.parseInt(lineasFichero.get(i).substring(posicionDelimitador + 1));
+                lista.add(new Herramienta(nombreHerramienta, precioHerramienta));
             }
-        }catch (IOException e){
+        }catch (NumberFormatException nfe){
+                JOptionPane.showMessageDialog(null,"Introduzca un precio válido");
+            }
+        catch (IOException e){
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null,e.getMessage());
+        }
+        catch (StringIndexOutOfBoundsException siobe){
+            JOptionPane.showMessageDialog(null,"Error en la lectura del fichero, puede que el delimitador no sea el correcto (;)");
         }
     }
 
     @Override
     public void guardaEnFichero(File fichero) {
         try (PrintWriter out = new PrintWriter(fichero)) {
-            out.print(lista.stream().map(Objects::toString).collect(Collectors.joining("\n")));
+            out.println(lista.stream().map(Objects::toString).collect(Collectors.joining("\n")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -68,7 +75,7 @@ public class ListaHerramienta implements Utilizable{
         private JLabel nombreHerramienta = new JLabel("Nombre de la herramienta: ");
         private JFormattedTextField nombreH = new JFormattedTextField();
         private JLabel precioHerramienta = new JLabel("Precio de la Herramienta: ");
-        private JFormattedTextField precioH = new JFormattedTextField(new Double(0));
+        private JFormattedTextField precioH = new JFormattedTextField();
         private JPanel panelEtiquetas = new JPanel();
 
         Panel(){
@@ -95,8 +102,10 @@ public class ListaHerramienta implements Utilizable{
         private Panel panel = new Panel();
         private JButton crear = new JButton("Añadir herramienta");
         PanelPrincipal(){
-            ventana.add(panel);
-            ventana.add(crear);
+            ventana.setLayout(new BorderLayout());
+            ventana.add(panel,BorderLayout.CENTER);
+            ventana.add(crear,BorderLayout.SOUTH);
+            ventana.pack();
             ventana.setVisible(true);
 
             crear.addActionListener(new ActionListener() {
@@ -107,8 +116,12 @@ public class ListaHerramienta implements Utilizable{
                         double precioHerramienta = Double.parseDouble(panel.getPrecioH().getText());
                         lista.add(new Herramienta(nombreHerramienta,precioHerramienta));
                         JOptionPane.showMessageDialog(null,"La herramienta "+nombreHerramienta+" con el precio "+precioHerramienta+" € ha sido añadida corretamente. ");
+                        ventana.dispose();
                     }catch (NullPointerException npe){
                         JOptionPane.showMessageDialog(null,npe.getMessage());
+                    }
+                    catch (NumberFormatException nfe){
+                        JOptionPane.showMessageDialog(null,"Introduce un precio válido.");
                     }
                 }
             });

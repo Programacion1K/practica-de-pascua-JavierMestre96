@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ListaGUI {
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
-        Utilizable lista=new ListaPalabras();
+        Utilizable lista=new ListaHerramienta();
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         JFrame frame=new JFrame();
         JPanel ventana=new JPanel();
